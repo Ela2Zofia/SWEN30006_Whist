@@ -4,6 +4,10 @@ import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Hand;
 
 public class HighRankSelectStrategy implements SelectStrategy{
+    public HighRankSelectStrategy(){
+        
+    }
+
     public Card select(Hand hand, Suit trumps, Card leadCard){
         if (hand.isEmpty())
             return null;
