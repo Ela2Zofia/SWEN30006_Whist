@@ -65,7 +65,7 @@ public class Whist extends CardGame {
 	// ====================================================
 	// gameplay elements
 	private final Deck deck = new Deck(Suit.values(), Rank.values(), "cover");
-	private final int thinkingTime = 2000;
+	private final int thinkingTime = 1000;
 	private Hand[] hands;
   	private int[] scores;
   	private Card selected;
@@ -149,7 +149,6 @@ public class Whist extends CardGame {
 	}
 
 
-
 	private String printHand(ArrayList<Card> cards) {
 		String out = "";
 		for (int i = 0; i < cards.size(); i++) {
@@ -174,9 +173,6 @@ public class Whist extends CardGame {
 		for (int i = 0; i < nbStartCards; i++) {
 			trick = new Hand(deck);
 			selected = null;
-			for (int p : players){
-				System.out.println(p);
-			}
 
 			if (1 == players[nextPlayer]) {  // Select lead depending on player type
 				hands[nextPlayer].setTouchEnabled(true);
@@ -256,11 +252,11 @@ public class Whist extends CardGame {
 		return Optional.empty();
 	}
 
+	// npcs play the game
 	private Card npcSelect(int nextPlayer, Hand trick, Suit trumps, Suit lead) throws IOException {
 		setStatusText("Player " + nextPlayer + " thinking...");
 		delay(thinkingTime);
-		// TODO: Implement card selection
-		return npcs[nextPlayer-(nbPlayers-nbNPC)].select(hands[nextPlayer], trick, trumps, lead);
+		return npcs[nextPlayer-(nbPlayers-nbNPC)].play(hands[nextPlayer], trick, trumps, lead);
 	}
 
 
@@ -269,7 +265,7 @@ public class Whist extends CardGame {
 		super(700, 700, 30);
 		setTitle("Whist (V" + version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
 		setStatusText("Initializing...");
-		reader = PropertyReader.getInstance();
+		reader = PropertyReader.getInstance("legal.properties");
 		nbPlayers = reader.getNbPlayers();
 		nbNPC = reader.getNbNPC();
 		nbStartCards = reader.getNbStartCards();

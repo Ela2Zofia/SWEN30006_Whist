@@ -6,6 +6,6 @@ import game.Suit;
 
 import java.util.ArrayList;
 
-public interface IFilterStrategy {
-    public ArrayList<Card> Filter(Hand hand, Suit trump, Suit lead, Card leadCard);
+public interface FilterStrategy {
+    public ArrayList<Card> filter(Hand hand, Suit trump, Suit lead);
 }

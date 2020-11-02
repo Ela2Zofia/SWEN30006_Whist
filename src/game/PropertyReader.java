@@ -63,28 +63,8 @@ public class PropertyReader{
                 inStream.close();
             }
         }
-
-        nbPlayers = Integer.parseInt(properties.getProperty("nbPlayers"));
-        nbStartCards = Integer.parseInt(properties.getProperty("nbStartCards"));
-        winningScore = Integer.parseInt(properties.getProperty("winningScore"));
-        randomState = Integer.parseInt(properties.getProperty("randomState"));
-        nbNPC = Integer.parseInt(properties.getProperty("nbNPC"));
-        rule = Boolean.parseBoolean(properties.getProperty("rule"));
-        npcs = new NPC[nbNPC];
-        players = new int[nbPlayers];
-        for (int i = 0; i < nbNPC; i++){
-            int k = i+1;
-            String[] list = properties.getProperty("npc" + k).split(",");
-            npcs[i] = new NPC(list[0], list[1]);
-        }
-        for (int i = 0; i < nbPlayers; i++){
-            players[i] = 0;
-        }
-        for (int i = 0; i < (nbPlayers-nbNPC); i++){
-            players[i] = 1;
-        }
+        setProperties(properties);
     }
-
 
     private PropertyReader() throws IOException{
         Properties properties = new Properties();
@@ -98,6 +78,12 @@ public class PropertyReader{
                 inStream.close();
             }
         }
+        setProperties(properties);
+
+    }
+
+
+    private void setProperties(Properties properties){
         nbPlayers = Integer.parseInt(properties.getProperty("nbPlayers"));
         nbStartCards = Integer.parseInt(properties.getProperty("nbStartCards"));
         winningScore = Integer.parseInt(properties.getProperty("winningScore"));
@@ -115,17 +101,16 @@ public class PropertyReader{
         for (int i = 0; i < nbPlayers-nbNPC; i++){
             players[i] = 1;
         }
-
     }
 
-
+    // singleton pattern
     public static PropertyReader getInstance() throws IOException {
         if (propertyReader == null) {
             propertyReader = new PropertyReader();
         }
         return propertyReader;
     }
-
+    // singleton pattern
     public static PropertyReader getInstance(String propertyName) throws IOException{
         if (propertyReader == null){
             propertyReader = new PropertyReader(propertyName);

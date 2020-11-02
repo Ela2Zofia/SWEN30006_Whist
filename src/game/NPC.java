@@ -1,37 +1,41 @@
 package game;
 
-
+import Filter.*;
+import Select.*;
 import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Hand;
 
 import java.io.IOException;
 
 public class NPC{
-    private SelectStrategy selector;
-    private FilterStrategy filter;
+    private SelectStrategy selectStrategy;
+    private FilterStrategy filterStrategy;
     public NPC(String filter, String select){
 
+        // set filter type according to the properties
         if (filter.equals("none")){
-            selector = new RandomSelectStrategy();
-        }else if (select.equals("highest")){
-            selector = new HighRankSelectStrategy();
-        }else if (select.equals("smart")){
-            selector = new SmartSelectStrategy();
+            filterStrategy = new NoFilter();
+        }else if (filter.equals("naive")){
+            filterStrategy = new NaiveLegalFilter();
+        }else if (filter.equals("trump")){
+            filterStrategy = new TrumpSaveFilter();
         }else{
             try {
-                throw (new SelectException("Invalid select strategy: " + select));
-            } catch (SelectException e) {
+                throw (new FilterException("Invalid filter strategy: " + filter));
+            } catch (FilterException e) {
                 e.printStackTrace();
                 System.exit(0);
             }
         }
+        filterStrategy=new NoFilter();
 
+        // set selector type according to the properties
         if (select.equals("random")){
-            selector = new RandomSelectStrategy();
+            selectStrategy = new RandomSelectStrategy();
         }else if (select.equals("highest")){
-            selector = new HighRankSelectStrategy();
+            selectStrategy = new HighRankSelectStrategy();
         }else if (select.equals("smart")){
-            selector = new SmartSelectStrategy();
+            selectStrategy = new SmartSelectStrategy();
         }else{
             try {
                 throw (new SelectException("Invalid select strategy: " + select));
@@ -42,8 +46,8 @@ public class NPC{
         }
     }
 
-    public Card select(Hand hand, Hand played, Suit trumps, Suit leadCard) throws IOException {
-        return selector.select(hand, played, trumps, leadCard);
+    public Card play(Hand hand, Hand played, Suit trumps, Suit leadCard) throws IOException {
+        return selectStrategy.select(filterStrategy.filter(hand, trumps, leadCard), played, trumps, leadCard);
     }
 
 }
