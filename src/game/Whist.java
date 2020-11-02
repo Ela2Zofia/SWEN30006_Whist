@@ -65,7 +65,7 @@ public class Whist extends CardGame {
 	// ====================================================
 	// gameplay elements
 	private final Deck deck = new Deck(Suit.values(), Rank.values(), "cover");
-	private final int thinkingTime = 10;
+	private final int thinkingTime = 1000;
 	private Hand[] hands;
   	private int[] scores;
   	private Card selected;
@@ -100,21 +100,29 @@ public class Whist extends CardGame {
 		addActor(scoreActors[player], scoreLocations[player]);
 	}
 
-
-	private void initRound() throws IOException {
+	/**
+	 * Initialise the round, set up graphics and deal out Cards
+	 */
+	private void initRound() {
 		hands = dealOut(deck,nbPlayers, nbStartCards); // Last element of hands is leftover cards; these are ignored
 		for (int i = 0; i < nbPlayers; i++) {
-			   hands[i].sort(Hand.SortType.SUITPRIORITY, true);
+			hands[i].sort(Hand.SortType.SUITPRIORITY, true);
+			// Set up human player for interaction
+			if (players[i] == 1){
+				int finalI = i;
+				CardListener cardListener = new CardAdapter()  // Human Player plays card
+				{
+					public void leftDoubleClicked(Card card) {
+						selected = card; hands[finalI].setTouchEnabled(false);
+					}
+				};
+				hands[i].addCardListener(cardListener);
+			}
+
 		}
-		 // Set up human player for interaction
-		CardListener cardListener = new CardAdapter()  // Human Player plays card
-			    {
-			      public void leftDoubleClicked(Card card) {
-			      	selected = card; hands[0].setTouchEnabled(false);
-			      }
-			    };
-		hands[0].addCardListener(cardListener);
-		 // graphics
+
+
+		// graphics
 	    RowLayout[] layouts = new RowLayout[nbPlayers];
 	    for (int i = 0; i < nbPlayers; i++) {
 	      layouts[i] = new RowLayout(handLocations[i], handWidth);
@@ -130,7 +138,14 @@ public class Whist extends CardGame {
 		    // End graphics
 	}
 
-	// custom dealing card method to implement seed randomness
+	/**
+	 * custom dealing card method to implement seed randomness
+	 *
+	 * @param deck The deck of which the game is based on
+	 * @param numPlayer Number of players
+	 * @param numCard Number of Cards for each player
+	 * @return An array of Hands represent the players' Cards
+	 */
 	private Hand[] dealOut(Deck deck, int numPlayer, int numCard){
 		Hand[] hands = new Hand[numPlayer];
 		for (int i = 0; i < numPlayer; i++){
@@ -158,6 +173,17 @@ public class Whist extends CardGame {
 		return (out);
 	}
 
+	// npcs play the game
+	private Card npcSelect(int nextPlayer, Hand trick, Suit trumps, Suit lead) throws IOException {
+		setStatusText("Player " + nextPlayer + " thinking...");
+		delay(thinkingTime);
+		return npcs[nextPlayer-(nbPlayers-nbNPC)].play(hands[nextPlayer], trick, trumps, lead);
+	}
+
+	/**
+	 * Where the main operations take place.
+	 * @throws IOException
+	 */
 	private Optional<Integer> playRound() throws IOException {  // Returns winner, if any
 		// Select and display trump suit
 		final Suit trumps = randomEnum(Suit.class);
@@ -173,14 +199,13 @@ public class Whist extends CardGame {
 		for (int i = 0; i < nbStartCards; i++) {
 			trick = new Hand(deck);
 			selected = null;
-			lead = null;
 
 			if (1 == players[nextPlayer]) {  // Select lead depending on player type
 				hands[nextPlayer].setTouchEnabled(true);
 				setStatus("Player "+ nextPlayer +" double-click on card to lead.");
 				while (null == selected) delay(100);
 			} else {
-				selected = npcSelect(nextPlayer, trick, trumps, lead);
+				selected = npcSelect(nextPlayer, trick, trumps, null);
 			}
 
 			// Lead with selected card
@@ -253,12 +278,7 @@ public class Whist extends CardGame {
 		return Optional.empty();
 	}
 
-	// npcs play the game
-	private Card npcSelect(int nextPlayer, Hand trick, Suit trumps, Suit lead) throws IOException {
-		setStatusText("Player " + nextPlayer + " thinking...");
-		delay(thinkingTime);
-		return npcs[nextPlayer-(nbPlayers-nbNPC)].play(hands[nextPlayer], trick, trumps, lead);
-	}
+
 
 
 	public Whist() throws IOException {

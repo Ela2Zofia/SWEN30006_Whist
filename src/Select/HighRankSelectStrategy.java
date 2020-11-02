@@ -4,13 +4,22 @@ import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Hand;
 import game.Suit;
 
-import java.awt.image.AreaAveragingScaleFilter;
 import java.util.ArrayList;
 
 public class HighRankSelectStrategy implements SelectStrategy{
     public HighRankSelectStrategy(){ }
 
     @Override
+    /**
+     * Select a Card from an ArrayList of Cards.
+     * Select the highest rank possible from the current hand. When multiple cards are possible, get the first one.
+     *
+     * @param hand An ArrayList of filtered card
+     * @param played Hand of the played card in this round, aka trick
+     * @param trump The trump suit of this round of the game
+     * @param leadCard The lead suit of this round of the game
+     * @return The chosen Card
+     */
     public Card select(ArrayList<Card> hand, Hand played, Suit trumps, Suit leadCard){
         Card result;
         hand.get(0).getHand().setSortType(Hand.SortType.RANKPRIORITY);
@@ -44,27 +53,24 @@ public class HighRankSelectStrategy implements SelectStrategy{
                 leadHand.add(c);
             }
         }
-
         //if there are some cards with lead suit，then return the first card
         if(!leadHand.isEmpty()){
             result = leadHand.get(0);
             return result;
-        }
-
-        // find highest ranked card with trump suit if no lead suit card is present
-        ArrayList<Card> trumpsHand = new ArrayList<>();
-        for (Card c : highestHand){
-            if (c.getSuit() == trumps){
-                trumpsHand.add(c);
+        }else{
+            // find highest ranked card with trump suit if no lead suit card is present
+            ArrayList<Card> trumpsHand = new ArrayList<>();
+            for (Card c : highestHand){
+                if (c.getSuit() == trumps){
+                    trumpsHand.add(c);
+                }
+            }
+            //if there is more than one card has trump suit with same rank, then select the first card
+            if(!trumpsHand.isEmpty()){
+                result = trumpsHand.get(0);
+                return result;
             }
         }
-
-        //if there is more than one card has trump suit with same rank, then select the first card
-        if(!trumpsHand.isEmpty()){
-            result = trumpsHand.get(0);
-            return result;
-        }
-
 
         //if there is no card suit same as trump suit neither, then choose the first highest ranked card
         result = highestHand.get(0);

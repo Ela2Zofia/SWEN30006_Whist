@@ -8,5 +8,5 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public interface SelectStrategy {
-    public Card select(ArrayList<Card> hand, Hand played, Suit trumps, Suit leadCard) throws IOException;
+    Card select(ArrayList<Card> hand, Hand played, Suit trumps, Suit leadCard) throws IOException;
 }
