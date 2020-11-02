@@ -11,6 +11,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Enum" />
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
@@ -36,6 +37,11 @@
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.2" />
   </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\14629\Desktop\SWEN30006\Project 2\Whist-V1.1\Whist" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="Whist" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="game.Whist" />
@@ -50,12 +56,24 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Application.Whist" />
       </list>
     </recent_temporary>
   </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -70,33 +88,39 @@
       <workItem from="1603160095096" duration="51000" />
       <workItem from="1604207359846" duration="6361000" />
       <workItem from="1604215652922" duration="1338000" />
+      <workItem from="1604290518519" duration="6770000" />
+      <workItem from="1604309282653" duration="12631000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="2" />
+    <option name="version" value="3" />
   </component>
   <component name="WindowStateProjectService">
+    <state x="804" y="241" key="#com.intellij.ide.util.MemberChooser" timestamp="1604313957212">
+      <screen x="78" y="0" width="1842" height="1080" />
+    </state>
+    <state x="804" y="241" key="#com.intellij.ide.util.MemberChooser/78.0.1842.1080@78.0.1842.1080" timestamp="1604313957212" />
     <state x="779" y="241" key="FileChooserDialogImpl" timestamp="1603160030254">
       <screen x="78" y="0" width="1842" height="1080" />
     </state>
     <state x="779" y="241" key="FileChooserDialogImpl/78.0.1842.1080@78.0.1842.1080" timestamp="1603160030254" />
-    <state width="1799" height="295" key="GridCell.Tab.0.bottom" timestamp="1604215204745">
+    <state width="1799" height="148" key="GridCell.Tab.0.bottom" timestamp="1604321509641">
       <screen x="78" y="0" width="1842" height="1080" />
     </state>
-    <state width="1799" height="295" key="GridCell.Tab.0.bottom/78.0.1842.1080@78.0.1842.1080" timestamp="1604215204745" />
-    <state width="1799" height="295" key="GridCell.Tab.0.center" timestamp="1604215204745">
+    <state width="1799" height="148" key="GridCell.Tab.0.bottom/78.0.1842.1080@78.0.1842.1080" timestamp="1604321509641" />
+    <state width="1799" height="148" key="GridCell.Tab.0.center" timestamp="1604321509641">
       <screen x="78" y="0" width="1842" height="1080" />
     </state>
-    <state width="1799" height="295" key="GridCell.Tab.0.center/78.0.1842.1080@78.0.1842.1080" timestamp="1604215204745" />
-    <state width="1799" height="295" key="GridCell.Tab.0.left" timestamp="1604215204745">
+    <state width="1799" height="148" key="GridCell.Tab.0.center/78.0.1842.1080@78.0.1842.1080" timestamp="1604321509641" />
+    <state width="1799" height="148" key="GridCell.Tab.0.left" timestamp="1604321509641">
       <screen x="78" y="0" width="1842" height="1080" />
     </state>
-    <state width="1799" height="295" key="GridCell.Tab.0.left/78.0.1842.1080@78.0.1842.1080" timestamp="1604215204745" />
-    <state width="1799" height="295" key="GridCell.Tab.0.right" timestamp="1604215204745">
+    <state width="1799" height="148" key="GridCell.Tab.0.left/78.0.1842.1080@78.0.1842.1080" timestamp="1604321509641" />
+    <state width="1799" height="148" key="GridCell.Tab.0.right" timestamp="1604321509641">
       <screen x="78" y="0" width="1842" height="1080" />
     </state>
-    <state width="1799" height="295" key="GridCell.Tab.0.right/78.0.1842.1080@78.0.1842.1080" timestamp="1604215204745" />
+    <state width="1799" height="148" key="GridCell.Tab.0.right/78.0.1842.1080@78.0.1842.1080" timestamp="1604321509641" />
     <state x="664" y="300" key="NewModule_or_Project.wizard" timestamp="1603159888286">
       <screen x="78" y="0" width="1842" height="1080" />
     </state>
@@ -105,6 +129,14 @@
       <screen x="78" y="0" width="1842" height="1080" />
     </state>
     <state x="479" y="114" key="SettingsEditor/78.0.1842.1080@78.0.1842.1080" timestamp="1603160032739" />
+    <state x="794" y="287" key="refactoring.ChangeSignatureDialog" timestamp="1604310566577">
+      <screen x="78" y="0" width="1842" height="1080" />
+    </state>
+    <state x="794" y="287" key="refactoring.ChangeSignatureDialog/78.0.1842.1080@78.0.1842.1080" timestamp="1604310566577" />
+    <state x="655" y="250" key="run.anything.popup" timestamp="1604307741455">
+      <screen x="78" y="0" width="1842" height="1080" />
+    </state>
+    <state x="655" y="250" key="run.anything.popup/78.0.1842.1080@78.0.1842.1080" timestamp="1604307741455" />
     <state x="364" y="225" key="search.everywhere.popup" timestamp="1603159922137">
       <screen x="78" y="0" width="1842" height="1080" />
     </state>

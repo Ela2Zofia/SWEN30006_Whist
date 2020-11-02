@@ -5,44 +5,40 @@ import ch.aplu.jgamegrid.*;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 
 @SuppressWarnings("serial")
 public class Whist extends CardGame {
-
-	final String trumpImage[] = {"bigspade.gif","bigheart.gif","bigdiamond.gif","bigclub.gif"};
-
-	static final Random random = ThreadLocalRandom.current();
-	// return random Enum value
-	public static <T extends Enum<?>> T randomEnum(Class<T> clazz) {
-		int x = random.nextInt(clazz.getEnumConstants().length);
-		return clazz.getEnumConstants()[x];
-	}
-
-	// return random Card from Hand
-	public static Card randomCard(Hand hand) {
-		int x = random.nextInt(hand.getNumberOfCards());
-		return hand.get(x);
-	}
-
-	// return random Card from ArrayList
-	public static Card randomCard(ArrayList<Card> list) {
-		int x = random.nextInt(list.size());
-		return list.get(x);
-	}
-  
-  	public boolean rankGreater(Card card1, Card card2) {
-		return card1.getRankId() < card2.getRankId(); // Warning: Reverse rank order of cards (see comment on enum)
-	}
-
 	private final String version = "1.0";
-	public final int nbPlayers = 4;
-	public final int nbStartCards = 13;
-	public final int winningScore = 24;
+
+	// read property file
+	private PropertyReader reader;
+
+
+	// ====================================================
+	// ====================================================
+	// properties
+	private final int nbPlayers;
+	private final int nbNPC;
+	private final int nbStartCards;
+	private final int winningScore;
+	private final int[] players;
+	private final boolean enforceRules;
+	private final Random random;
+	private NPC[] npcs;
+	// end of properties
+	// ====================================================
+	// ====================================================
+
+
+
+	// ====================================================
+	// ====================================================
+	// UI elements
+	final String[] trumpImage = {"bigspade.gif","bigheart.gif","bigdiamond.gif","bigclub.gif"};
 	private final int handWidth = 400;
 	private final int trickWidth = 40;
-  	private final Deck deck = new Deck(Suit.values(), Rank.values(), "cover");
   	private final Location[] handLocations = {
 		  new Location(350, 625),
 		  new Location(75, 350),
@@ -58,15 +54,37 @@ public class Whist extends CardGame {
   	private Actor[] scoreActors = {null, null, null, null };
   	private final Location trickLocation = new Location(350, 350);
   	private final Location textLocation = new Location(350, 450);
-  	private final int thinkingTime = 2000;
-  	private Hand[] hands;
   	private Location hideLocation = new Location(-500, - 500);
   	private Location trumpsActorLocation = new Location(50, 50);
-  	private boolean enforceRules=false;
-  	public void setStatus(String string) { setStatusText(string); }
-  	private int[] scores = new int[nbPlayers];
+  	Font bigFont = new Font("Serif", Font.BOLD, 36);
+  	// end of UI elements
+	// ====================================================
+	// ====================================================
 
-	Font bigFont = new Font("Serif", Font.BOLD, 36);
+	// ====================================================
+	// ====================================================
+	// gameplay elements
+	private final Deck deck = new Deck(Suit.values(), Rank.values(), "cover");
+	private final int thinkingTime = 2000;
+	private Hand[] hands;
+  	private int[] scores;
+  	private Card selected;
+  	// end of gameplay elements
+	// ====================================================
+	// ====================================================
+
+
+	// return random Enum value
+	private <T extends Enum<?>> T randomEnum(Class<T> clazz) {
+		int x = random.nextInt(clazz.getEnumConstants().length);
+		return clazz.getEnumConstants()[x];
+	}
+
+	public boolean rankGreater(Card card1, Card card2) {
+		return card1.getRankId() < card2.getRankId(); // Warning: Reverse rank order of cards (see comment on enum)
+	}
+
+	private void setStatus(String string) { setStatusText(string); }
 
 	private void initScore() {
 		for (int i = 0; i < nbPlayers; i++) {
@@ -82,13 +100,12 @@ public class Whist extends CardGame {
 		addActor(scoreActors[player], scoreLocations[player]);
 	}
 
-	private Card selected;
 
-	private void initRound() {
-		 hands = deck.dealingOut(nbPlayers, nbStartCards); // Last element of hands is leftover cards; these are ignored
-		 for (int i = 0; i < nbPlayers; i++) {
+	private void initRound() throws IOException {
+		hands = dealOut(deck,nbPlayers, nbStartCards); // Last element of hands is leftover cards; these are ignored
+		for (int i = 0; i < nbPlayers; i++) {
 			   hands[i].sort(Hand.SortType.SUITPRIORITY, true);
-		 }
+		}
 		 // Set up human player for interaction
 		CardListener cardListener = new CardAdapter()  // Human Player plays card
 			    {
@@ -113,6 +130,26 @@ public class Whist extends CardGame {
 		    // End graphics
 	}
 
+	// custom dealing card method to implement seed randomness
+	private Hand[] dealOut(Deck deck, int numPlayer, int numCard){
+		Hand[] hands = new Hand[numPlayer];
+		for (int i = 0; i < numPlayer; i++){
+			hands[i] = new Hand(deck);
+		}
+		Hand pack = deck.toHand(false);
+		for (int i=0; i < numPlayer;i++) {
+			for (int j = 0; j < numCard; j++) {
+				int x = random.nextInt(pack.getNumberOfCards());
+				Card dealt = pack.get(x);
+				dealt.removeFromHand(false);
+				hands[i].insert(dealt, false);
+			}
+		}
+		return hands;
+	}
+
+
+
 	private String printHand(ArrayList<Card> cards) {
 		String out = "";
 		for (int i = 0; i < cards.size(); i++) {
@@ -122,7 +159,7 @@ public class Whist extends CardGame {
 		return (out);
 	}
 
-	private Optional<Integer> playRound() {  // Returns winner, if any
+	private Optional<Integer> playRound() throws IOException {  // Returns winner, if any
 		// Select and display trump suit
 		final Suit trumps = randomEnum(Suit.class);
 		final Actor trumpsActor = new Actor("sprites/" + trumpImage[trumps.ordinal()]);
@@ -132,21 +169,21 @@ public class Whist extends CardGame {
 		Hand trick;
 		int winner;
 		Card winningCard;
-		Suit lead;
+		Suit lead = null;
 		int nextPlayer = random.nextInt(nbPlayers); // randomly select player to lead for this round
 		for (int i = 0; i < nbStartCards; i++) {
 			trick = new Hand(deck);
 			selected = null;
+			for (int p : players){
+				System.out.println(p);
+			}
 
-			if (0 == nextPlayer) {  // Select lead depending on player type
-				hands[0].setTouchEnabled(true);
-				setStatus("Player 0 double-click on card to lead.");
+			if (1 == players[nextPlayer]) {  // Select lead depending on player type
+				hands[nextPlayer].setTouchEnabled(true);
+				setStatus("Player "+ nextPlayer +" double-click on card to lead.");
 				while (null == selected) delay(100);
 			} else {
-				setStatusText("Player " + nextPlayer + " thinking...");
-				delay(thinkingTime);
-				// TODO: Implement lead card selection option
-				selected = randomCard(hands[nextPlayer]);
+				selected = npcSelect(nextPlayer, trick, trumps, lead);
 			}
 
 			// Lead with selected card
@@ -166,16 +203,12 @@ public class Whist extends CardGame {
 			for (int j = 1; j < nbPlayers; j++) {
 				if (++nextPlayer >= nbPlayers) nextPlayer = 0;  // From last back to first
 				selected = null;
-				if (0 == nextPlayer) {
-					hands[0].setTouchEnabled(true);
-					setStatus("Player 0 double-click on card to follow.");
+				if (1 == players[nextPlayer]) {
+					hands[nextPlayer].setTouchEnabled(true);
+					setStatus("Player "+nextPlayer+" double-click on card to follow.");
 					while (null == selected) delay(100);
 				} else {
-					setStatusText("Player " + nextPlayer + " thinking...");
-					delay(thinkingTime);
-
-					// TODO: Implement card selection
-					selected = randomCard(hands[nextPlayer]);
+					selected = npcSelect(nextPlayer, trick, trumps, lead);
 				}
 
 				// Follow with selected card
@@ -223,12 +256,32 @@ public class Whist extends CardGame {
 		return Optional.empty();
 	}
 
-	public Whist() {
+	private Card npcSelect(int nextPlayer, Hand trick, Suit trumps, Suit lead) throws IOException {
+		setStatusText("Player " + nextPlayer + " thinking...");
+		delay(thinkingTime);
+		// TODO: Implement card selection
+		return npcs[nextPlayer-(nbPlayers-nbNPC)].select(hands[nextPlayer], trick, trumps, lead);
+	}
+
+
+	public Whist() throws IOException {
+
 		super(700, 700, 30);
 		setTitle("Whist (V" + version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
 		setStatusText("Initializing...");
+		reader = PropertyReader.getInstance();
+		nbPlayers = reader.getNbPlayers();
+		nbNPC = reader.getNbNPC();
+		nbStartCards = reader.getNbStartCards();
+		winningScore = reader.getWinningScore();
+		players = reader.getPlayers();
+		enforceRules= reader.getRule();
+		random = new Random(reader.getRandomState());
+		npcs = reader.getNPCs();
+		scores = new int[nbPlayers];
 		initScore();
 		Optional<Integer> winner;
+
 		do {
 			initRound();
 			winner = playRound();
@@ -238,7 +291,7 @@ public class Whist extends CardGame {
 		refresh();
 	}
 
-  	public static void main(String[] args) {
+  	public static void main(String[] args) throws IOException {
 		new Whist();
   	}
 
