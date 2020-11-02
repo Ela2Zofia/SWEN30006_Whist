@@ -10,48 +10,61 @@ public class SmartSelectStrategy implements SelectStrategy {
     @Override
     public Card select(ArrayList<Card> hand, Hand played, Suit trump, Suit leadCard) {
         Card result;
+        played.sort(Hand.SortType.SUITPRIORITY, false);
+        hand.get(0).getHand().setSortType(Hand.SortType.RANKPRIORITY);
+        hand.sort(Card::compareTo);
         if (hand.isEmpty()){
             return null;
         }
         if (leadCard == null) {
             // if trump card available, choose the trump card with the highest rank, else play the highest rank
-            Hand trumps = hand.extractCardsWithSuit(trump);
-            if (!trumps.isEmpty()){
-                result = trumps.reverseSort(Hand.SortType.RANKPRIORITY, false);
-            }else{
-                result = hand.reverseSort(Hand.SortType.RANKPRIORITY, false);
+            ArrayList<Card> trumps = new ArrayList<>();
+            for (Card c : hand){
+                if (c.getSuit() == trump){
+                    trumps.add(c);
+                }
             }
-            return hand.getCard(result.getSuit(),result.getRank());
+            if (!trumps.isEmpty()){
+                result = trumps.get(0);
+            }else{
+                result = hand.get(0);
+            }
+            return result;
         }else {
-            Hand leadCards = played.extractCardsWithSuit(leadCard);
-            Hand handLeads = hand.extractCardsWithSuit(leadCard);
-            Hand trumpCards = played.extractCardsWithSuit(trump);
-            Hand handTrumps = hand.extractCardsWithSuit(trump);
+            ArrayList<Card> leadCards = played.getCardsWithSuit(leadCard);
+            ArrayList<Card> handLeads = new ArrayList<>();
+            ArrayList<Card> trumpCards = played.getCardsWithSuit(trump);
+            ArrayList<Card> handTrumps = new ArrayList<>();
+            for (Card c : hand){
+                if (c.getSuit() == leadCard){
+                    handLeads.add(c);
+                } else if (c.getSuit() == trump){
+                    handTrumps.add(c);
+                }
+            }
+
 
             // if the player has card of lead suit, return the highest ranked card of lead suit
             // if there is a card with higher rank, else return the lowest ranked card
             if (!handLeads.isEmpty()){
-                if (leadCards.reverseSort(Hand.SortType.RANKPRIORITY,false).getRankId()
-                        > handLeads.reverseSort(Hand.SortType.RANKPRIORITY,false).getRankId()){
-                    result = handLeads.reverseSort(Hand.SortType.RANKPRIORITY,false);
+                if (leadCards.get(0).getRankId() > handLeads.get(0).getRankId()){
+                    result = handLeads.get(0);
                 }else{
-                    result = handLeads.sort(Hand.SortType.RANKPRIORITY,false);
+                    result = handLeads.get(handLeads.size()-1);
                 }
-                return hand.getCard(result.getSuit(),result.getRank());
+                return result;
             }else{
                 // if the player has no card of lead suit, check for cards of trump suit
                 // return the highest ranked card of trump suit if there is one with higher rank
                 if (!handTrumps.isEmpty()){
-                    if (trumpCards.reverseSort(Hand.SortType.RANKPRIORITY,false).getRankId()
-                            > handTrumps.reverseSort(Hand.SortType.RANKPRIORITY,false).getRankId() ){
-                        result = handTrumps.reverseSort(Hand.SortType.RANKPRIORITY,false);
-                        return hand.getCard(result.getSuit(),result.getRank());
+                    if (trumpCards.get(0).getRankId() > handTrumps.get(0).getRankId() ){
+                        result = handTrumps.get(0);
+                        return result;
                     }
                 }
             }
             // if none of the requirements is met, return the lowest ranked card
-            result = hand.sort(Hand.SortType.RANKPRIORITY, false);
-            return hand.getCard(result.getSuit(),result.getRank());
+            return hand.get(hand.size()-1);
         }
 
     }

@@ -27,7 +27,6 @@ public class NPC{
                 System.exit(0);
             }
         }
-        filterStrategy=new NoFilter();
 
         // set selector type according to the properties
         if (select.equals("random")){

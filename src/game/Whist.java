@@ -65,7 +65,7 @@ public class Whist extends CardGame {
 	// ====================================================
 	// gameplay elements
 	private final Deck deck = new Deck(Suit.values(), Rank.values(), "cover");
-	private final int thinkingTime = 1000;
+	private final int thinkingTime = 10;
 	private Hand[] hands;
   	private int[] scores;
   	private Card selected;
@@ -168,11 +168,12 @@ public class Whist extends CardGame {
 		Hand trick;
 		int winner;
 		Card winningCard;
-		Suit lead = null;
+		Suit lead;
 		int nextPlayer = random.nextInt(nbPlayers); // randomly select player to lead for this round
 		for (int i = 0; i < nbStartCards; i++) {
 			trick = new Hand(deck);
 			selected = null;
+			lead = null;
 
 			if (1 == players[nextPlayer]) {  // Select lead depending on player type
 				hands[nextPlayer].setTouchEnabled(true);
@@ -265,7 +266,7 @@ public class Whist extends CardGame {
 		super(700, 700, 30);
 		setTitle("Whist (V" + version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
 		setStatusText("Initializing...");
-		reader = PropertyReader.getInstance("legal.properties");
+		reader = PropertyReader.getInstance("smart.properties");
 		nbPlayers = reader.getNbPlayers();
 		nbNPC = reader.getNbNPC();
 		nbStartCards = reader.getNbStartCards();

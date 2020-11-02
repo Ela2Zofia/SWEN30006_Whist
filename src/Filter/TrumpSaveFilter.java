@@ -14,10 +14,10 @@ public class TrumpSaveFilter implements FilterStrategy {
             return hand.getCardList();
         }
         //filter the cards in the lead suit
-        if(!hand.extractCardsWithSuit(lead).isEmpty()){
+        if(!hand.getCardsWithSuit(lead).isEmpty()){
             return hand.getCardsWithSuit(lead);
         //if no lead suit, filter the cards in the trump suit.
-        }else if(!hand.extractCardsWithSuit(trump).isEmpty()){
+        }else if(!hand.getCardsWithSuit(trump).isEmpty()){
             return hand.getCardsWithSuit(trump);
         //If the NPC does not have cards in the lead suit nor in the trump suit,no filter
         }else{
