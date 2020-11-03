@@ -14,7 +14,7 @@ public class Whist extends CardGame {
 
 	// read property file
 	private PropertyReader reader;
-
+	private final String filename = "whist.properties";
 
 	// ====================================================
 	// ====================================================
@@ -286,7 +286,7 @@ public class Whist extends CardGame {
 		super(700, 700, 30);
 		setTitle("Whist (V" + version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
 		setStatusText("Initializing...");
-		reader = PropertyReader.getInstance();
+		reader = PropertyReader.getInstance(filename);
 		nbPlayers = reader.getNbPlayers();
 		nbNPC = reader.getNbNPC();
 		nbStartCards = reader.getNbStartCards();
