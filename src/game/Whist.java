@@ -286,7 +286,7 @@ public class Whist extends CardGame {
 		super(700, 700, 30);
 		setTitle("Whist (V" + version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
 		setStatusText("Initializing...");
-		reader = PropertyReader.getInstance("smart.properties");
+		reader = PropertyReader.getInstance();
 		nbPlayers = reader.getNbPlayers();
 		nbNPC = reader.getNbNPC();
 		nbStartCards = reader.getNbStartCards();
